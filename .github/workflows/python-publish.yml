@@ -1,0 +1,176 @@
+# How to Publish a Python Package for FastAPI-Docker-Production-Deployment
+
+This guide will help you structure, build, and publish a Python package for your FastAPI-Docker-Production-Deployment project to [PyPI](https://pypi.org/).
+
+---
+
+## 1. Prepare Your Project Structure
+
+For Python packaging, a typical structure is:
+
+```
+fastapi_docker_production_deployment/
+├── fastapi_docker_production_deployment/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── config.py
+│   └── routes/
+│       ├── __init__.py
+│       ├── items.py
+│       └── users.py
+├── tests/
+│   ├── __init__.py
+│   ├── test_main.py
+│   └── test_routes.py
+├── pyproject.toml
+├── README.md
+├── LICENSE.md
+└── ...
+```
+
+- The main package directory should be named after your package (e.g., `fastapi_docker_production_deployment`).
+- Ensure there is an `__init__.py` in every Python package folder.
+
+---
+
+## 2. Create `pyproject.toml`
+
+This file is the modern standard for Python packaging:
+
+```
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fastapi-docker-production-deployment"
+version = "0.1.0"
+description = "Production-ready FastAPI app with Docker, Gunicorn, and Uvicorn."
+authors = [
+    { name="Kirankumarvel", email="your-email@example.com" }
+]
+readme = "README.md"
+license = { file = "LICENSE.md" }
+requires-python = ">=3.8"
+dependencies = [
+    "fastapi>=0.104.1",
+    "uvicorn[standard]>=0.24.0",
+    "gunicorn>=21.2.0",
+    "python-dotenv>=1.0.0",
+    "python-multipart>=0.0.6",
+    "psutil>=5.9.5"
+]
+
+[project.urls]
+Homepage = "https://github.com/Kirankumarvel/FastAPI-Docker-Production-Deployment"
+Documentation = "https://github.com/Kirankumarvel/FastAPI-Docker-Production-Deployment"
+Source = "https://github.com/Kirankumarvel/FastAPI-Docker-Production-Deployment"
+
+[tool.setuptools.packages.find]
+where = ["."]
+```
+
+---
+
+## 3. Add a `__version__` to your main package
+
+For example, in `fastapi_docker_production_deployment/__init__.py`:
+
+```python
+__version__ = "0.1.0"
+```
+
+---
+
+## 4. Write or Update `README.md` & `LICENSE.md`
+
+- Your README is shown on PyPI.
+- MIT License is recommended (see `LICENSE.md` in this repo).
+
+---
+
+## 5. Build the Package
+
+```bash
+pip install --upgrade build
+python -m build
+```
+
+- This creates `dist/fastapi_docker_production_deployment-0.1.0.tar.gz` and `.whl`.
+
+---
+
+## 6. Upload to PyPI
+
+### 6.1. Install Twine
+
+```bash
+pip install --upgrade twine
+```
+
+### 6.2. Upload
+
+```bash
+twine upload dist/*
+```
+
+- You will be prompted for your PyPI username and password.
+- To test on [TestPyPI](https://test.pypi.org/):  
+  `twine upload --repository testpypi dist/*`
+
+---
+
+## 7. Install Your Package
+
+Test installation in a fresh virtual environment:
+
+```bash
+pip install fastapi-docker-production-deployment
+```
+
+---
+
+## 8. (Optional) Make Your App Runnable
+
+If you want users to launch your FastAPI app directly:
+
+- Add an entry point in `pyproject.toml`:
+
+```
+[project.scripts]
+fastapi-docker-prod = "fastapi_docker_production_deployment.main:run"
+```
+
+- Implement a `run()` function in `main.py` that starts Uvicorn:
+
+```python
+def run():
+    import uvicorn
+    from .config import settings
+    uvicorn.run(
+        "fastapi_docker_production_deployment.main:app",
+        host=settings.HOST,
+        port=settings.PORT,
+        reload=settings.DEBUG,
+        log_level=settings.LOG_LEVEL
+    )
+```
+
+---
+
+## 9. Tips
+
+- Use [checklist for PyPI packaging](https://packaging.python.org/en/latest/tutorials/packaging-projects/).
+- Version bump with each release.
+- Include only necessary files in the package (see `MANIFEST.in` if needed).
+
+---
+
+## 10. Reference
+
+- [PyPI Packaging Guide](https://packaging.python.org/en/latest/tutorials/packaging-projects/)
+- [Twine Documentation](https://twine.readthedocs.io/en/stable/)
+
+---
+
+Congratulations! You are now ready to publish and share your FastAPI-Docker-Production-Deployment as a Python package on PyPI!
